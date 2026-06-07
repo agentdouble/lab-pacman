@@ -82,6 +82,10 @@ export class PacmanGame {
   }
 
   update(dt) {
+    if (this.state === "paused") {
+      return;
+    }
+
     this.time += dt;
 
     if (this.state === "ready" && this.time >= this.readyUntil) {
