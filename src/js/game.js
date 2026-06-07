@@ -9,6 +9,7 @@ import {
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
+import { GameOverView } from "./game-over-view.js";
 import {
   canMoveFrom,
   isCentered,
@@ -25,13 +26,30 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    gameOverScreen,
+    finalScoreElement,
+    gameOverRestartButton,
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.gameOverView = new GameOverView({
+      screenElement: gameOverScreen,
+      scoreElement: finalScoreElement,
+      restartButton: gameOverRestartButton,
+      onRestart: () => this.restart(),
+    });
     this.renderer = new Renderer(canvas);
     this.maze = new Maze();
     this.pacman = new Pacman(this.maze.pacmanSpawn);
@@ -251,6 +269,7 @@ export class PacmanGame {
       this.state = "gameOver";
       this.pauseButton.textContent = "Pause";
       this.showMessage("GAME OVER");
+      this.gameOverView.show(this.score);
       return;
     }
 
@@ -292,6 +311,7 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.state = "ready";
     this.pauseButton.textContent = "Pause";
+    this.gameOverView.hide();
     this.showMessage("READY");
     this.updateHud();
   }

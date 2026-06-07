@@ -30,6 +30,26 @@
       <section class="game-panel" aria-label="Pac-Man board">
         <canvas id="gameCanvas" width="672" height="704"></canvas>
         <div id="message" class="game-message" aria-live="polite">READY</div>
+        <div
+          id="gameOverScreen"
+          class="game-over-screen"
+          role="dialog"
+          aria-modal="true"
+          aria-hidden="true"
+          aria-labelledby="gameOverTitle"
+          hidden
+        >
+          <div class="game-over-panel">
+            <h1 id="gameOverTitle" class="game-over-title">Game Over</h1>
+            <div class="game-over-score">
+              <span>Final score</span>
+              <strong id="finalScore">0</strong>
+            </div>
+            <button id="gameOverRestartButton" class="text-button primary-action" type="button">
+              Play again
+            </button>
+          </div>
+        </div>
       </section>
 
       <nav class="dpad" aria-label="Movement controls">

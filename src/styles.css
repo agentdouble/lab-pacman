@@ -142,6 +142,7 @@ button {
 .game-message {
   position: absolute;
   inset: 50% auto auto 50%;
+  z-index: 1;
   min-width: min(72%, 340px);
   padding: 14px 18px;
   border: 1px solid rgba(255, 216, 77, 0.5);
@@ -161,6 +162,75 @@ button {
 
 .game-message.is-visible {
   opacity: 1;
+}
+
+.game-over-screen[hidden] {
+  display: none;
+}
+
+.game-over-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 5vw, 42px);
+  background: rgba(5, 5, 10, 0.92);
+}
+
+.game-over-panel {
+  width: min(100%, 360px);
+  padding: clamp(18px, 4vw, 30px);
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  border: 1px solid rgba(255, 216, 77, 0.45);
+  border-radius: 8px;
+  background: rgba(17, 16, 25, 0.94);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.5),
+    0 0 36px rgba(255, 77, 103, 0.16);
+  text-align: center;
+}
+
+.game-over-title {
+  margin: 0;
+  color: var(--red);
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.game-over-score {
+  display: grid;
+  gap: 6px;
+}
+
+.game-over-score span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.game-over-score strong {
+  color: var(--yellow);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1;
+}
+
+.primary-action {
+  width: min(100%, 190px);
+  background: var(--yellow);
+  color: #111019;
+  font-weight: 900;
+}
+
+.primary-action:hover {
+  border-color: rgba(255, 248, 216, 0.82);
+  background: #ffe782;
 }
 
 .dpad {
