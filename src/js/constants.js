@@ -21,6 +21,13 @@ export const OPPOSITE_DIRECTION = Object.freeze({
   none: "none",
 });
 
+export const GAME_STATES = Object.freeze({
+  ready: "ready",
+  playing: "playing",
+  paused: "paused",
+  gameOver: "gameOver",
+});
+
 export const LEVEL_LAYOUT = Object.freeze([
   "#####################",
   "#.........#.........#",

@@ -1,6 +1,7 @@
 import {
   DIRECTIONS,
   FRIGHTENED_GHOST_SPEED,
+  GAME_STATES,
   GHOST_SPEED,
   PACMAN_SPEED,
   POWER_DURATION,
@@ -25,13 +26,23 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    onGameOver = () => {},
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.onGameOver = onGameOver;
     this.renderer = new Renderer(canvas);
     this.maze = new Maze();
     this.pacman = new Pacman(this.maze.pacmanSpawn);
@@ -41,7 +52,8 @@ export class PacmanGame {
     this.score = 0;
     this.level = 1;
     this.lives = STARTING_LIVES;
-    this.state = "ready";
+    this.state = GAME_STATES.ready;
+    this.finalScore = null;
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
@@ -84,17 +96,21 @@ export class PacmanGame {
   update(dt) {
     this.time += dt;
 
-    if (this.state === "ready" && this.time >= this.readyUntil) {
+    if (this.state === GAME_STATES.ready && this.time >= this.readyUntil) {
       this.showMessage("READY");
     }
 
-    if (this.state !== "playing") {
+    if (this.state !== GAME_STATES.playing) {
       return;
     }
 
     this.updatePacman(dt);
     this.updateGhosts(dt);
     this.resolveCollisions();
+
+    if (this.state !== GAME_STATES.playing) {
+      return;
+    }
 
     if (this.maze.pelletsRemaining === 0) {
       this.advanceLevel();
@@ -104,8 +120,8 @@ export class PacmanGame {
   queueDirection(direction) {
     this.pacman.nextDirection = direction;
 
-    if (this.state === "ready") {
-      this.state = "playing";
+    if (this.state === GAME_STATES.ready) {
+      this.state = GAME_STATES.playing;
       this.hideMessage();
     }
   }
@@ -248,17 +264,40 @@ export class PacmanGame {
     this.updateHud();
 
     if (this.lives <= 0) {
-      this.state = "gameOver";
-      this.pauseButton.textContent = "Pause";
-      this.showMessage("GAME OVER");
+      this.endGame();
       return;
     }
 
     this.resetActors();
     this.powerUntil = 0;
-    this.state = "ready";
+    this.state = GAME_STATES.ready;
     this.readyUntil = this.time + ROUND_READY_TIME;
     this.showMessage("READY");
+  }
+
+  endGame() {
+    if (this.state === GAME_STATES.gameOver) {
+      return;
+    }
+
+    this.state = GAME_STATES.gameOver;
+    this.finalScore = this.score;
+    this.pauseButton.textContent = "Pause";
+    this.showMessage("GAME OVER");
+    this.onGameOver(this.getGameOverSummary());
+  }
+
+  getFinalScore() {
+    return this.finalScore;
+  }
+
+  getGameOverSummary() {
+    return {
+      state: this.state,
+      finalScore: this.finalScore,
+      level: this.level,
+      lives: this.lives,
+    };
   }
 
   advanceLevel() {
@@ -267,7 +306,7 @@ export class PacmanGame {
     this.resetActors();
     this.powerUntil = 0;
     this.ghostCombo = 0;
-    this.state = "ready";
+    this.state = GAME_STATES.ready;
     this.readyUntil = this.time + LEVEL_READY_TIME;
     this.showMessage(`LEVEL ${this.level}`);
     this.updateHud();
@@ -287,25 +326,26 @@ export class PacmanGame {
     this.lives = STARTING_LIVES;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.finalScore = null;
     this.resetActors();
     this.time = 0;
     this.readyUntil = ROUND_READY_TIME;
-    this.state = "ready";
+    this.state = GAME_STATES.ready;
     this.pauseButton.textContent = "Pause";
     this.showMessage("READY");
     this.updateHud();
   }
 
   togglePause() {
-    if (this.state === "playing") {
-      this.state = "paused";
+    if (this.state === GAME_STATES.playing) {
+      this.state = GAME_STATES.paused;
       this.pauseButton.textContent = "Resume";
       this.showMessage("PAUSED");
       return;
     }
 
-    if (this.state === "paused") {
-      this.state = "playing";
+    if (this.state === GAME_STATES.paused) {
+      this.state = GAME_STATES.playing;
       this.pauseButton.textContent = "Pause";
       this.hideMessage();
     }
