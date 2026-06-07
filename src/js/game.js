@@ -45,6 +45,9 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.frameRequest = null;
+    this.isStarted = false;
+    this.pauseSnapshot = null;
 
     new InputController({
       canvas,
@@ -60,15 +63,49 @@ export class PacmanGame {
   }
 
   start() {
-    requestAnimationFrame((timestamp) => this.frame(timestamp));
+    if (this.isStarted) {
+      return;
+    }
+
+    this.isStarted = true;
+    this.scheduleFrame();
   }
 
   frame(timestamp) {
+    this.frameRequest = null;
+
+    if (this.state === "paused") {
+      return;
+    }
+
     const seconds = timestamp / 1000;
     const dt = Math.min(0.05, seconds - (this.lastFrame || seconds));
     this.lastFrame = seconds;
 
     this.update(dt);
+    this.render();
+
+    this.scheduleFrame();
+  }
+
+  scheduleFrame() {
+    if (!this.isStarted || this.frameRequest !== null || this.state === "paused") {
+      return;
+    }
+
+    this.frameRequest = requestAnimationFrame((timestamp) => this.frame(timestamp));
+  }
+
+  cancelFrame() {
+    if (this.frameRequest === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.frameRequest);
+    this.frameRequest = null;
+  }
+
+  render() {
     this.renderer.render({
       maze: this.maze,
       pacman: this.pacman,
@@ -77,11 +114,13 @@ export class PacmanGame {
       isFrightened: this.isFrightened(),
       frightenedTimeLeft: Math.max(0, this.powerUntil - this.time),
     });
-
-    requestAnimationFrame((nextTimestamp) => this.frame(nextTimestamp));
   }
 
   update(dt) {
+    if (this.state === "paused") {
+      return;
+    }
+
     this.time += dt;
 
     if (this.state === "ready" && this.time >= this.readyUntil) {
@@ -291,23 +330,41 @@ export class PacmanGame {
     this.time = 0;
     this.readyUntil = ROUND_READY_TIME;
     this.state = "ready";
+    this.pauseSnapshot = null;
+    this.lastFrame = 0;
     this.pauseButton.textContent = "Pause";
     this.showMessage("READY");
     this.updateHud();
+    this.scheduleFrame();
   }
 
   togglePause() {
-    if (this.state === "playing") {
+    if (this.state === "playing" || this.state === "ready") {
+      this.pauseSnapshot = {
+        state: this.state,
+        message: this.messageElement.textContent,
+        messageVisible: this.messageElement.classList.contains("is-visible"),
+      };
       this.state = "paused";
       this.pauseButton.textContent = "Resume";
       this.showMessage("PAUSED");
+      this.cancelFrame();
+      this.render();
       return;
     }
 
     if (this.state === "paused") {
-      this.state = "playing";
+      const snapshot = this.pauseSnapshot;
+      this.pauseSnapshot = null;
+      this.state = snapshot?.state ?? "playing";
       this.pauseButton.textContent = "Pause";
-      this.hideMessage();
+      if (snapshot?.messageVisible) {
+        this.showMessage(snapshot.message);
+      } else {
+        this.hideMessage();
+      }
+      this.lastFrame = 0;
+      this.scheduleFrame();
     }
   }
 
