@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pac-Man</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="top-bar" aria-label="Game status">
+        <div class="metric">
+          <span class="metric-label">Score</span>
+          <strong id="score">0</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Level</span>
+          <strong id="level">1</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Lives</span>
+          <strong id="lives">3</strong>
+        </div>
+        <div class="actions">
+          <button id="pauseButton" class="text-button" type="button">Pause</button>
+          <button id="restartButton" class="text-button" type="button">Restart</button>
+        </div>
+      </header>
+
+      <section class="game-panel" aria-label="Pac-Man board">
+        <canvas id="gameCanvas" width="672" height="704"></canvas>
+        <div id="message" class="game-message" aria-live="polite">READY</div>
+      </section>
+
+      <nav class="dpad" aria-label="Movement controls">
+        <button class="dpad-button up" data-dir="up" type="button" aria-label="Up"></button>
+        <button class="dpad-button left" data-dir="left" type="button" aria-label="Left"></button>
+        <button class="dpad-button right" data-dir="right" type="button" aria-label="Right"></button>
+        <button class="dpad-button down" data-dir="down" type="button" aria-label="Down"></button>
+      </nav>
+    </main>
+
+    <script type="module" src="./src/js/main.js"></script>
+  </body>
+</html>
