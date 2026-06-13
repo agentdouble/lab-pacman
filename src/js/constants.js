@@ -52,6 +52,29 @@ export const FRIGHTENED_GHOST_SPEED = 4.7;
 export const POWER_DURATION = 7.5;
 export const STARTING_LIVES = 3;
 
+export const PACMAN_COLORS = Object.freeze([
+  Object.freeze({
+    id: "gold",
+    name: "Gold",
+    fill: "#ffd84d",
+    shadow: "rgba(255, 216, 77, 0.42)",
+  }),
+  Object.freeze({
+    id: "lime",
+    name: "Lime",
+    fill: "#b9ff4d",
+    shadow: "rgba(185, 255, 77, 0.36)",
+  }),
+  Object.freeze({
+    id: "violet",
+    name: "Violet",
+    fill: "#b67cff",
+    shadow: "rgba(182, 124, 255, 0.38)",
+  }),
+]);
+
+export const DEFAULT_PACMAN_COLOR = PACMAN_COLORS[0];
+
 export const GHOSTS = Object.freeze({
   B: Object.freeze({
     id: "blinky",

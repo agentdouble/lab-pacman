@@ -12,7 +12,16 @@ const KEY_TO_DIRECTION = Object.freeze({
 });
 
 export class InputController {
-  constructor({ canvas, pauseButton, restartButton, onDirection, onPause, onRestart }) {
+  constructor({
+    canvas,
+    pauseButton,
+    restartButton,
+    colorButtons = [],
+    onDirection,
+    onPause,
+    onRestart,
+    onColorChange = () => {},
+  }) {
     this.onDirection = onDirection;
     this.touchStart = null;
 
@@ -65,6 +74,10 @@ export class InputController {
 
     pauseButton.addEventListener("click", onPause);
     restartButton.addEventListener("click", onRestart);
+
+    for (const button of colorButtons) {
+      button.addEventListener("click", () => onColorChange(button.dataset.pacmanColor));
+    }
   }
 
   emitDirection(directionName) {

@@ -3,6 +3,7 @@ import {
   FRIGHTENED_GHOST_SPEED,
   GHOST_SPEED,
   PACMAN_SPEED,
+  PACMAN_COLORS,
   POWER_DURATION,
   STARTING_LIVES,
 } from "./constants.js";
@@ -25,16 +26,29 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    colorButtons = [],
+    colorNameElement,
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.colorButtons = Array.from(colorButtons);
+    this.colorNameElement = colorNameElement;
+    this.pacmanColor = PACMAN_COLORS[0];
     this.renderer = new Renderer(canvas);
     this.maze = new Maze();
-    this.pacman = new Pacman(this.maze.pacmanSpawn);
+    this.pacman = new Pacman(this.maze.pacmanSpawn, this.pacmanColor);
     this.ghosts = this.maze.ghostSpawns.map((spawn, index) => new Ghost(spawn, index));
     this.lastFrame = 0;
     this.time = 0;
@@ -50,11 +64,14 @@ export class PacmanGame {
       canvas,
       pauseButton,
       restartButton,
+      colorButtons: this.colorButtons,
       onDirection: (direction) => this.queueDirection(direction),
       onPause: () => this.togglePause(),
       onRestart: () => this.restart(),
+      onColorChange: (colorId) => this.setPacmanColor(colorId),
     });
 
+    this.updateColorControls();
     this.updateHud();
     this.showMessage("READY");
   }
@@ -275,6 +292,7 @@ export class PacmanGame {
 
   resetActors() {
     this.pacman.reset();
+    this.pacman.setColor(this.pacmanColor);
     for (const ghost of this.ghosts) {
       ghost.reset();
     }
@@ -294,6 +312,18 @@ export class PacmanGame {
     this.pauseButton.textContent = "Pause";
     this.showMessage("READY");
     this.updateHud();
+  }
+
+  setPacmanColor(colorId) {
+    const color = PACMAN_COLORS.find((candidate) => candidate.id === colorId);
+
+    if (!color) {
+      return;
+    }
+
+    this.pacmanColor = color;
+    this.pacman.setColor(color);
+    this.updateColorControls();
   }
 
   togglePause() {
@@ -329,5 +359,17 @@ export class PacmanGame {
     this.scoreElement.textContent = String(this.score);
     this.levelElement.textContent = String(this.level);
     this.livesElement.textContent = String(this.lives);
+  }
+
+  updateColorControls() {
+    for (const button of this.colorButtons) {
+      const selected = button.dataset.pacmanColor === this.pacmanColor.id;
+      button.classList.toggle("is-selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    }
+
+    if (this.colorNameElement) {
+      this.colorNameElement.textContent = this.pacmanColor.name;
+    }
   }
 }

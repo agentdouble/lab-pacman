@@ -53,12 +53,13 @@ button {
 .top-bar {
   min-height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(84px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(84px, 1fr)) minmax(168px, 1.15fr) auto;
   gap: 10px;
   align-items: stretch;
 }
 
 .metric,
+.color-picker,
 .actions {
   min-width: 0;
   border: 1px solid rgba(255, 248, 216, 0.12);
@@ -85,6 +86,62 @@ button {
 .metric strong {
   color: var(--yellow);
   font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+  line-height: 1;
+}
+
+.color-picker {
+  padding: 9px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px 10px;
+  align-content: center;
+  border-radius: 8px;
+}
+
+.color-picker .metric-label {
+  grid-column: 1 / -1;
+}
+
+.color-options {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-swatch {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(255, 248, 216, 0.2);
+  border-radius: 50%;
+  background: var(--swatch-color);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 3px rgba(5, 5, 10, 0.34);
+  transition:
+    border-color 140ms ease,
+    transform 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.color-swatch:hover {
+  border-color: rgba(255, 248, 216, 0.7);
+}
+
+.color-swatch:active {
+  transform: translateY(1px);
+}
+
+.color-swatch.is-selected {
+  border-color: var(--text);
+  box-shadow:
+    inset 0 0 0 3px rgba(5, 5, 10, 0.34),
+    0 0 0 2px rgba(255, 216, 77, 0.44);
+}
+
+.color-name {
+  align-self: center;
+  color: var(--yellow);
+  font-size: 0.9rem;
   line-height: 1;
 }
 
@@ -256,6 +313,7 @@ button {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .color-picker,
   .actions {
     grid-column: 1 / -1;
   }
@@ -265,7 +323,7 @@ button {
   }
 
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 362px) * 0.9545));
   }
 
   .dpad {
@@ -275,7 +333,7 @@ button {
 
 @media (pointer: coarse) {
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 362px) * 0.9545));
   }
 
   .dpad {

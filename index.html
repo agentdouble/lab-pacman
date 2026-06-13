@@ -21,6 +21,36 @@
           <span class="metric-label">Lives</span>
           <strong id="lives">3</strong>
         </div>
+        <div class="color-picker" aria-label="Pac-Man color">
+          <span class="metric-label">Pac-Man Color</span>
+          <div class="color-options" role="group" aria-label="Pac-Man color">
+            <button
+              class="color-swatch is-selected"
+              data-pacman-color="gold"
+              style="--swatch-color: #ffd84d"
+              type="button"
+              aria-label="Gold"
+              aria-pressed="true"
+            ></button>
+            <button
+              class="color-swatch"
+              data-pacman-color="lime"
+              style="--swatch-color: #b9ff4d"
+              type="button"
+              aria-label="Lime"
+              aria-pressed="false"
+            ></button>
+            <button
+              class="color-swatch"
+              data-pacman-color="violet"
+              style="--swatch-color: #b67cff"
+              type="button"
+              aria-label="Violet"
+              aria-pressed="false"
+            ></button>
+          </div>
+          <strong id="pacmanColorName" class="color-name">Gold</strong>
+        </div>
         <div class="actions">
           <button id="pauseButton" class="text-button" type="button">Pause</button>
           <button id="restartButton" class="text-button" type="button">Restart</button>
