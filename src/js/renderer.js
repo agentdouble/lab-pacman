@@ -2,6 +2,9 @@ const WALL_COLOR = "#234cff";
 const WALL_EDGE = "#91b7ff";
 const PELLET_COLOR = "#fff3a6";
 const POWER_COLOR = "#ffd84d";
+const FRUIT_COLOR = "#ff3358";
+const FRUIT_HIGHLIGHT = "#ff8fa5";
+const FRUIT_STEM = "#72d45f";
 const FRIGHTENED_COLOR = "#3267ff";
 const FRIGHTENED_FLASH = "#fff8d8";
 const BACKGROUND = "#05050a";
@@ -30,7 +33,7 @@ export class Renderer {
     this.context.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  render({ maze, pacman, ghosts, time, isFrightened, frightenedTimeLeft }) {
+  render({ maze, pacman, ghosts, bonusFruit, time, isFrightened, frightenedTimeLeft }) {
     const ctx = this.context;
     ctx.clearRect(0, 0, this.cssWidth, this.cssHeight);
     ctx.fillStyle = BACKGROUND;
@@ -43,6 +46,7 @@ export class Renderer {
     this.drawGridGlow(maze);
     this.drawWalls(maze);
     this.drawPellets(maze, time);
+    this.drawBonusFruit(bonusFruit, time);
     for (const ghost of ghosts) {
       this.drawGhost(ghost, time, isFrightened, frightenedTimeLeft);
     }
@@ -118,6 +122,43 @@ export class Renderer {
         ctx.fill();
       }
     }
+  }
+
+  drawBonusFruit(bonusFruit, time) {
+    if (!bonusFruit?.active || !bonusFruit.tile) {
+      return;
+    }
+
+    const ctx = this.context;
+    const { x, y } = this.toPixel(bonusFruit.tile.x, bonusFruit.tile.y);
+    const pulse = 0.92 + Math.sin(time * 8) * 0.08;
+    const radius = this.tileSize * 0.21 * pulse;
+
+    ctx.save();
+    ctx.shadowColor = "rgba(255, 51, 88, 0.62)";
+    ctx.shadowBlur = this.tileSize * 0.26;
+
+    ctx.fillStyle = FRUIT_STEM;
+    ctx.strokeStyle = FRUIT_STEM;
+    ctx.lineWidth = Math.max(1, this.tileSize * 0.055);
+    ctx.beginPath();
+    ctx.moveTo(x, y - radius * 0.72);
+    ctx.quadraticCurveTo(x + radius * 0.16, y - radius * 1.42, x + radius * 0.7, y - radius * 1.48);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(x - radius * 0.45, y, radius, 0, Math.PI * 2);
+    ctx.arc(x + radius * 0.45, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = FRUIT_COLOR;
+    ctx.fill();
+
+    ctx.globalAlpha = 0.74;
+    ctx.beginPath();
+    ctx.arc(x - radius * 0.78, y - radius * 0.3, radius * 0.28, 0, Math.PI * 2);
+    ctx.arc(x + radius * 0.12, y - radius * 0.3, radius * 0.24, 0, Math.PI * 2);
+    ctx.fillStyle = FRUIT_HIGHLIGHT;
+    ctx.fill();
+    ctx.restore();
   }
 
   drawPacman(pacman, time) {

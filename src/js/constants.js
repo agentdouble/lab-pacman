@@ -51,6 +51,11 @@ export const GHOST_SPEED = 6.15;
 export const FRIGHTENED_GHOST_SPEED = 4.7;
 export const POWER_DURATION = 7.5;
 export const STARTING_LIVES = 3;
+export const BONUS_FRUIT_POINTS = 250;
+export const BONUS_FRUIT_START_DELAY = 12;
+export const BONUS_FRUIT_INTERVAL = 24;
+export const BONUS_FRUIT_DURATION = 7;
+export const BONUS_FRUIT_SPAWN = Object.freeze({ x: 10, y: 16 });
 
 export const GHOSTS = Object.freeze({
   B: Object.freeze({

@@ -6,6 +6,7 @@ import {
   POWER_DURATION,
   STARTING_LIVES,
 } from "./constants.js";
+import { BonusFruit } from "./bonus-fruit.js";
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
@@ -45,6 +46,7 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.bonusFruit = new BonusFruit();
 
     new InputController({
       canvas,
@@ -73,6 +75,7 @@ export class PacmanGame {
       maze: this.maze,
       pacman: this.pacman,
       ghosts: this.ghosts,
+      bonusFruit: this.bonusFruit,
       time: this.time,
       isFrightened: this.isFrightened(),
       frightenedTimeLeft: Math.max(0, this.powerUntil - this.time),
@@ -92,6 +95,7 @@ export class PacmanGame {
       return;
     }
 
+    this.bonusFruit.update(this.time, this.maze);
     this.updatePacman(dt);
     this.updateGhosts(dt);
     this.resolveCollisions();
@@ -129,6 +133,13 @@ export class PacmanGame {
 
       if (pellet.points > 0) {
         this.score += pellet.points;
+        this.updateHud();
+      }
+
+      const fruitPoints = this.bonusFruit.collectAt(tile, this.maze, this.time);
+
+      if (fruitPoints > 0) {
+        this.score += fruitPoints;
         this.updateHud();
       }
 
@@ -256,6 +267,7 @@ export class PacmanGame {
 
     this.resetActors();
     this.powerUntil = 0;
+    this.bonusFruit.reset(this.time);
     this.state = "ready";
     this.readyUntil = this.time + ROUND_READY_TIME;
     this.showMessage("READY");
@@ -267,6 +279,7 @@ export class PacmanGame {
     this.resetActors();
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.bonusFruit.reset(this.time);
     this.state = "ready";
     this.readyUntil = this.time + LEVEL_READY_TIME;
     this.showMessage(`LEVEL ${this.level}`);
@@ -287,6 +300,7 @@ export class PacmanGame {
     this.lives = STARTING_LIVES;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.bonusFruit.reset(0);
     this.resetActors();
     this.time = 0;
     this.readyUntil = ROUND_READY_TIME;
