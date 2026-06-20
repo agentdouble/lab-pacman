@@ -6,6 +6,7 @@ import {
   STARTING_LIVES,
 } from "./constants.js";
 import { DIFFICULTY_LIST, getDifficulty } from "./difficulty.js";
+import { PacmanColorSettings } from "./color-settings.js";
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
@@ -34,6 +35,8 @@ export class PacmanGame {
     pauseButton,
     restartButton,
     difficultySelect,
+    colorOptionsElement,
+    colorStatusElement,
   }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
@@ -56,6 +59,12 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.colorSettings = new PacmanColorSettings({
+      container: colorOptionsElement,
+      statusElement: colorStatusElement,
+      onColorChange: (color) => this.setPacmanColor(color),
+    });
+    this.setPacmanColor(this.colorSettings.getColor());
 
     new InputController({
       canvas,
@@ -288,6 +297,11 @@ export class PacmanGame {
     for (const ghost of this.ghosts) {
       ghost.reset(this.difficulty.ghostReleaseDelayMultiplier);
     }
+  }
+
+  restart({ message = `${this.difficulty.label} MODE` } = {}) {
+  setPacmanColor(color) {
+    this.pacman.setColor(color);
   }
 
   restart({ message = `${this.difficulty.label} MODE` } = {}) {

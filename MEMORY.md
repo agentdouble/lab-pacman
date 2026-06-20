@@ -4,3 +4,4 @@
 - 2026-06-07: Keep game code modular: `maze.js` owns layout/pellets, `movement.js` owns grid movement, `entities.js` owns Pac-Man and ghost state, `renderer.js` owns Canvas drawing, `input.js` owns keyboard/touch controls, and `game.js` coordinates the loop.
 - 2026-06-08: GitHub remote for the project is `https://github.com/agentdouble/lab-pacman.git`; use `main` as the primary branch.
 - 2026-06-20: Difficulty settings live in `src/js/difficulty.js`; `game.js` applies them to Pac-Man speed, ghost speed, frightened speed, power pellet duration, and ghost release delays, while `index.html` exposes the selector.
+- 2026-06-20: Pac-Man color selection is handled by `src/js/color-settings.js`; the selected color is stored on the `Pacman` entity and intentionally persists when using Restart.

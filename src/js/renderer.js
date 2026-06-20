@@ -128,13 +128,13 @@ export class Renderer {
     const angle = directionAngle(pacman.facing);
 
     ctx.save();
-    ctx.shadowColor = "rgba(255, 216, 77, 0.42)";
+    ctx.shadowColor = pacman.shadowColor;
     ctx.shadowBlur = this.tileSize * 0.28;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.arc(x, y, radius, angle + mouth, angle + Math.PI * 2 - mouth);
     ctx.closePath();
-    ctx.fillStyle = "#ffd84d";
+    ctx.fillStyle = pacman.color;
     ctx.fill();
     ctx.restore();
   }
