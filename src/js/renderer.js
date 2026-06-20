@@ -126,11 +126,12 @@ export class Renderer {
     const radius = this.tileSize * 0.42;
     const mouth = 0.18 + Math.abs(Math.sin(time * 13)) * 0.28;
     const angle = directionAngle(pacman.facing);
-    const color = pacman.character?.color ?? "#ffd84d";
+    const color = pacman.color ?? pacman.character?.color ?? "#ffd84d";
     const accentColor = pacman.character?.accentColor ?? "#fff8d8";
+    const shadowColor = pacman.shadowColor ?? `${color}66`;
 
     ctx.save();
-    ctx.shadowColor = `${color}66`;
+    ctx.shadowColor = shadowColor;
     ctx.shadowBlur = this.tileSize * 0.28;
     ctx.beginPath();
     ctx.moveTo(x, y);

@@ -10,6 +10,10 @@ const game = new PacmanGame({
   restartButton: document.querySelector("#restartButton"),
   characterOptionsElement: document.querySelector("#characterOptions"),
   characterRuleElement: document.querySelector("#characterRule"),
+  difficultySelect: document.querySelector("#difficultySelect"),
+  colorOptionsElement: document.querySelector("#pacmanColorOptions"),
+  colorStatusElement: document.querySelector("#pacmanColorStatus"),
+  enemyColorElement: document.querySelector("#enemyColorSetting"),
 });
 
 game.start();
