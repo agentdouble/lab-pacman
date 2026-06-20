@@ -49,7 +49,6 @@ export const LEVEL_LAYOUT = Object.freeze([
 export const PACMAN_SPEED = 7.2;
 export const GHOST_SPEED = 6.15;
 export const FRIGHTENED_GHOST_SPEED = 4.7;
-export const POWER_DURATION = 7.5;
 export const STARTING_LIVES = 3;
 
 export const GHOSTS = Object.freeze({

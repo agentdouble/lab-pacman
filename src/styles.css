@@ -53,12 +53,13 @@ button {
 .top-bar {
   min-height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(84px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(84px, 1fr)) minmax(126px, 0.9fr) auto;
   gap: 10px;
   align-items: stretch;
 }
 
 .metric,
+.difficulty-setting,
 .actions {
   min-width: 0;
   border: 1px solid rgba(255, 248, 216, 0.12);
@@ -66,12 +67,29 @@ button {
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.24);
 }
 
-.metric {
+.metric,
+.difficulty-setting {
   padding: 10px 12px;
   display: grid;
   align-content: center;
   gap: 3px;
   border-radius: 8px;
+}
+
+.difficulty-select {
+  width: 100%;
+  min-height: 28px;
+  border: 1px solid rgba(255, 248, 216, 0.16);
+  border-radius: 6px;
+  background: var(--panel-strong);
+  color: var(--yellow);
+  font: inherit;
+  font-weight: 800;
+}
+
+.difficulty-select:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
 }
 
 .metric-label {
@@ -260,12 +278,16 @@ button {
     grid-column: 1 / -1;
   }
 
+  .difficulty-setting {
+    grid-column: 1 / -1;
+  }
+
   .text-button {
     flex: 1;
   }
 
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 354px) * 0.9545));
   }
 
   .dpad {
@@ -275,7 +297,7 @@ button {
 
 @media (pointer: coarse) {
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 354px) * 0.9545));
   }
 
   .dpad {
