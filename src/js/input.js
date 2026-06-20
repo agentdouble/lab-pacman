@@ -11,12 +11,18 @@ const KEY_TO_DIRECTION = Object.freeze({
   KeyA: "left",
 });
 
+const FORM_CONTROL_TAGS = new Set(["BUTTON", "INPUT", "SELECT", "TEXTAREA"]);
+
 export class InputController {
   constructor({ canvas, pauseButton, restartButton, onDirection, onPause, onRestart }) {
     this.onDirection = onDirection;
     this.touchStart = null;
 
     window.addEventListener("keydown", (event) => {
+      if (isFormControl(event.target)) {
+        return;
+      }
+
       const directionName = KEY_TO_DIRECTION[event.code];
 
       if (directionName) {
@@ -74,4 +80,8 @@ export class InputController {
       this.onDirection(direction);
     }
   }
+}
+
+function isFormControl(target) {
+  return target instanceof HTMLElement && (FORM_CONTROL_TAGS.has(target.tagName) || target.isContentEditable);
 }

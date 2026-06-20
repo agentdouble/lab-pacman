@@ -54,12 +54,13 @@ button {
 .top-bar {
   min-height: 64px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   align-items: stretch;
 }
 
 .metric,
+.map-setting,
 .enemy-color-setting,
 .difficulty-setting,
 .actions,
@@ -71,6 +72,7 @@ button {
 }
 
 .metric,
+.map-setting,
 .difficulty-setting {
   padding: 10px 12px;
   display: grid;
@@ -79,6 +81,7 @@ button {
   border-radius: 8px;
 }
 
+.map-select,
 .difficulty-select {
   width: 100%;
   min-height: 28px;
@@ -90,6 +93,12 @@ button {
   font-weight: 800;
 }
 
+.map-select {
+  color: var(--text);
+  cursor: pointer;
+}
+
+.map-select:focus-visible,
 .difficulty-select:focus-visible {
   outline: 2px solid var(--yellow);
   outline-offset: 2px;
@@ -544,6 +553,10 @@ button {
 
   .top-bar {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .map-setting {
+    grid-column: 1 / -1;
   }
 
   .enemy-color-setting {
