@@ -11,6 +11,7 @@ const game = new PacmanGame({
   difficultySelect: document.querySelector("#difficultySelect"),
   colorOptionsElement: document.querySelector("#pacmanColorOptions"),
   colorStatusElement: document.querySelector("#pacmanColorStatus"),
+  enemyColorElement: document.querySelector("#enemyColorSetting"),
 });
 
 game.start();

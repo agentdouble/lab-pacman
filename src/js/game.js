@@ -1,4 +1,5 @@
 import {
+  DEFAULT_ENEMY_COLOR,
   DIRECTIONS,
   FRIGHTENED_GHOST_SPEED,
   GHOST_SPEED,
@@ -20,6 +21,7 @@ import {
   withoutReverse,
 } from "./movement.js";
 import { Renderer } from "./renderer.js";
+import { EnemyColorSettings } from "./settings.js";
 
 const COLLISION_DISTANCE = 0.58;
 const ROUND_READY_TIME = 1.2;
@@ -37,6 +39,7 @@ export class PacmanGame {
     difficultySelect,
     colorOptionsElement,
     colorStatusElement,
+    enemyColorElement,
   }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
@@ -50,6 +53,7 @@ export class PacmanGame {
     this.maze = new Maze();
     this.pacman = new Pacman(this.maze.pacmanSpawn);
     this.ghosts = this.maze.ghostSpawns.map((spawn, index) => new Ghost(spawn, index));
+    this.enemyColor = DEFAULT_ENEMY_COLOR;
     this.lastFrame = 0;
     this.time = 0;
     this.score = 0;
@@ -75,6 +79,12 @@ export class PacmanGame {
       onRestart: () => this.restart(),
     });
 
+    this.enemyColorSettings = new EnemyColorSettings({
+      element: enemyColorElement,
+      onChange: (color) => this.setEnemyColor(color),
+    });
+    this.setEnemyColor(this.enemyColorSettings.value);
+
     this.setupDifficultySelect();
     this.updateHud();
     this.showMessage(`${this.difficulty.label} MODE`);
@@ -82,6 +92,14 @@ export class PacmanGame {
 
   start() {
     requestAnimationFrame((timestamp) => this.frame(timestamp));
+  }
+
+  setEnemyColor(color) {
+    this.enemyColor = color;
+
+    for (const ghost of this.ghosts) {
+      ghost.color = color;
+    }
   }
 
   frame(timestamp) {
@@ -299,7 +317,6 @@ export class PacmanGame {
     }
   }
 
-  restart({ message = `${this.difficulty.label} MODE` } = {}) {
   setPacmanColor(color) {
     this.pacman.setColor(color);
   }
