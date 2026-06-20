@@ -3,14 +3,16 @@ import { PacmanGame } from "./game.js";
 
 const mazeSelectElement = document.querySelector("#mazeSelect");
 
-for (const maze of MAZE_OPTIONS) {
-  const option = document.createElement("option");
-  option.value = maze.id;
-  option.textContent = maze.name;
-  mazeSelectElement.append(option);
-}
+if (mazeSelectElement) {
+  for (const maze of MAZE_OPTIONS) {
+    const option = document.createElement("option");
+    option.value = maze.id;
+    option.textContent = maze.name;
+    mazeSelectElement.append(option);
+  }
 
-mazeSelectElement.value = DEFAULT_MAZE_ID;
+  mazeSelectElement.value = DEFAULT_MAZE_ID;
+}
 
 const game = new PacmanGame({
   canvas: document.querySelector("#gameCanvas"),
@@ -21,6 +23,12 @@ const game = new PacmanGame({
   pauseButton: document.querySelector("#pauseButton"),
   restartButton: document.querySelector("#restartButton"),
   mazeSelectElement,
+  characterOptionsElement: document.querySelector("#characterOptions"),
+  characterRuleElement: document.querySelector("#characterRule"),
+  difficultySelect: document.querySelector("#difficultySelect"),
+  colorOptionsElement: document.querySelector("#pacmanColorOptions"),
+  colorStatusElement: document.querySelector("#pacmanColorStatus"),
+  enemyColorElement: document.querySelector("#enemyColorSetting"),
 });
 
 game.start();

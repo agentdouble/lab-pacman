@@ -25,11 +25,34 @@
           <span class="metric-label">Maze</span>
           <select id="mazeSelect" class="map-select" aria-label="Maze type"></select>
         </label>
+        <label class="difficulty-setting" for="difficultySelect">
+          <span class="metric-label">Difficulty</span>
+          <select id="difficultySelect" class="difficulty-select" aria-label="Difficulty"></select>
+        </label>
         <div class="actions">
           <button id="pauseButton" class="text-button" type="button">Pause</button>
           <button id="restartButton" class="text-button" type="button">New Game</button>
         </div>
+        <section class="color-settings" aria-labelledby="pacmanColorLabel">
+          <div class="color-settings-header">
+            <span id="pacmanColorLabel" class="metric-label">Pac-Man Color</span>
+            <span id="pacmanColorStatus" class="color-status">Restart keeps color.</span>
+          </div>
+          <div id="pacmanColorOptions" class="color-options" role="group" aria-labelledby="pacmanColorLabel"></div>
+        </section>
+        <div id="enemyColorSetting" class="enemy-color-setting" aria-label="Enemy color setting"></div>
       </header>
+
+      <section class="character-panel" aria-labelledby="characterTitle">
+        <div class="character-panel-header">
+          <div>
+            <span class="metric-label">Character</span>
+            <h1 id="characterTitle">Pac-Man roster</h1>
+          </div>
+          <p id="characterRule" class="character-rule" aria-live="polite"></p>
+        </div>
+        <div id="characterOptions" class="character-options" aria-label="Character settings"></div>
+      </section>
 
       <section class="game-panel" aria-label="Pac-Man board">
         <canvas id="gameCanvas" width="672" height="704"></canvas>

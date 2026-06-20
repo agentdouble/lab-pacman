@@ -126,16 +126,25 @@ export class Renderer {
     const radius = this.tileSize * 0.42;
     const mouth = 0.18 + Math.abs(Math.sin(time * 13)) * 0.28;
     const angle = directionAngle(pacman.facing);
+    const color = pacman.color ?? pacman.character?.color ?? "#ffd84d";
+    const accentColor = pacman.character?.accentColor ?? "#fff8d8";
+    const shadowColor = pacman.shadowColor ?? `${color}66`;
 
     ctx.save();
-    ctx.shadowColor = "rgba(255, 216, 77, 0.42)";
+    ctx.shadowColor = shadowColor;
     ctx.shadowBlur = this.tileSize * 0.28;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.arc(x, y, radius, angle + mouth, angle + Math.PI * 2 - mouth);
     ctx.closePath();
-    ctx.fillStyle = "#ffd84d";
+    ctx.fillStyle = color;
     ctx.fill();
+
+    ctx.lineWidth = Math.max(2, this.tileSize * 0.08);
+    ctx.strokeStyle = accentColor;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 0.66, angle + Math.PI * 0.55, angle + Math.PI * 1.24);
+    ctx.stroke();
     ctx.restore();
   }
 
