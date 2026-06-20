@@ -4,9 +4,10 @@ import {
   FRIGHTENED_GHOST_SPEED,
   GHOST_SPEED,
   PACMAN_SPEED,
-  POWER_DURATION,
   STARTING_LIVES,
 } from "./constants.js";
+import { DIFFICULTY_LIST, getDifficulty } from "./difficulty.js";
+import { PacmanColorSettings } from "./color-settings.js";
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
@@ -35,6 +36,9 @@ export class PacmanGame {
     messageElement,
     pauseButton,
     restartButton,
+    difficultySelect,
+    colorOptionsElement,
+    colorStatusElement,
     enemyColorElement,
   }) {
     this.canvas = canvas;
@@ -43,6 +47,8 @@ export class PacmanGame {
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.difficultySelect = difficultySelect;
+    this.difficulty = getDifficulty(difficultySelect?.value);
     this.renderer = new Renderer(canvas);
     this.maze = new Maze();
     this.pacman = new Pacman(this.maze.pacmanSpawn);
@@ -57,6 +63,12 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.colorSettings = new PacmanColorSettings({
+      container: colorOptionsElement,
+      statusElement: colorStatusElement,
+      onColorChange: (color) => this.setPacmanColor(color),
+    });
+    this.setPacmanColor(this.colorSettings.getColor());
 
     new InputController({
       canvas,
@@ -73,8 +85,9 @@ export class PacmanGame {
     });
     this.setEnemyColor(this.enemyColorSettings.value);
 
+    this.setupDifficultySelect();
     this.updateHud();
-    this.showMessage("READY");
+    this.showMessage(`${this.difficulty.label} MODE`);
   }
 
   start() {
@@ -159,7 +172,7 @@ export class PacmanGame {
       }
 
       if (pellet.powered) {
-        this.powerUntil = this.time + POWER_DURATION;
+        this.powerUntil = this.time + this.difficulty.powerDuration;
         this.ghostCombo = 0;
       }
     }
@@ -168,14 +181,12 @@ export class PacmanGame {
       this.pacman.facing = this.pacman.direction;
     }
 
-    moveEntity(this.pacman, this.maze, dt, PACMAN_SPEED + Math.min(1.1, (this.level - 1) * 0.16));
+    moveEntity(this.pacman, this.maze, dt, this.getPacmanSpeed());
   }
 
   updateGhosts(dt) {
     const frightened = this.isFrightened();
-    const speed = frightened
-      ? FRIGHTENED_GHOST_SPEED
-      : GHOST_SPEED + Math.min(0.85, (this.level - 1) * 0.11);
+    const speed = this.getGhostSpeed(frightened);
 
     for (const ghost of this.ghosts) {
       if (this.time < ghost.releaseDelay && this.level === 1) {
@@ -302,11 +313,15 @@ export class PacmanGame {
   resetActors() {
     this.pacman.reset();
     for (const ghost of this.ghosts) {
-      ghost.reset();
+      ghost.reset(this.difficulty.ghostReleaseDelayMultiplier);
     }
   }
 
-  restart() {
+  setPacmanColor(color) {
+    this.pacman.setColor(color);
+  }
+
+  restart({ message = `${this.difficulty.label} MODE` } = {}) {
     this.maze.resetPellets();
     this.score = 0;
     this.level = 1;
@@ -318,7 +333,7 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.state = "ready";
     this.pauseButton.textContent = "Pause";
-    this.showMessage("READY");
+    this.showMessage(message);
     this.updateHud();
   }
 
@@ -339,6 +354,50 @@ export class PacmanGame {
 
   isFrightened() {
     return this.powerUntil > this.time;
+  }
+
+  getPacmanSpeed() {
+    const levelBonus = Math.min(1.1, (this.level - 1) * 0.16);
+    return (PACMAN_SPEED + levelBonus) * this.difficulty.pacmanSpeedMultiplier;
+  }
+
+  getGhostSpeed(frightened) {
+    if (frightened) {
+      return FRIGHTENED_GHOST_SPEED * this.difficulty.frightenedGhostSpeedMultiplier;
+    }
+
+    const levelBonus = Math.min(0.85, (this.level - 1) * 0.11);
+    return (GHOST_SPEED + levelBonus) * this.difficulty.ghostSpeedMultiplier;
+  }
+
+  setupDifficultySelect() {
+    if (!this.difficultySelect) {
+      return;
+    }
+
+    this.difficultySelect.replaceChildren(
+      ...DIFFICULTY_LIST.map((difficulty) => {
+        const option = document.createElement("option");
+        option.value = difficulty.id;
+        option.textContent = difficulty.label;
+        return option;
+      }),
+    );
+    this.difficultySelect.value = this.difficulty.id;
+
+    this.difficultySelect.addEventListener("change", () => {
+      this.setDifficulty(this.difficultySelect.value);
+    });
+  }
+
+  setDifficulty(difficultyId) {
+    this.difficulty = getDifficulty(difficultyId);
+
+    if (this.difficultySelect) {
+      this.difficultySelect.value = this.difficulty.id;
+    }
+
+    this.restart();
   }
 
   showMessage(message) {
