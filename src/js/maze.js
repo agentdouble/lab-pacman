@@ -1,4 +1,4 @@
-import { GHOSTS, LEVEL_LAYOUT } from "./constants.js";
+import { DEFAULT_MAZE_ID, GHOSTS, MAZE_DEFINITIONS } from "./constants.js";
 
 const WALL = "#";
 const PELLET = ".";
@@ -6,7 +6,12 @@ const POWER_PELLET = "o";
 const PACMAN_SPAWN = "M";
 
 export class Maze {
-  constructor(layout = LEVEL_LAYOUT) {
+  constructor(mazeDefinition = DEFAULT_MAZE_ID) {
+    const definition = getMazeDefinition(mazeDefinition);
+    const layout = definition.layout;
+
+    this.id = definition.id;
+    this.name = definition.name;
     this.height = layout.length;
     this.width = layout[0].length;
     this.initialGrid = [];
@@ -39,6 +44,10 @@ export class Maze {
 
     if (!this.pacmanSpawn) {
       throw new Error("Maze is missing a Pac-Man spawn tile.");
+    }
+
+    if (this.ghostSpawns.length === 0) {
+      throw new Error("Maze is missing ghost spawn tiles.");
     }
 
     this.resetPellets();
@@ -94,4 +103,12 @@ export class Maze {
 
     return { points: 0, powered: false };
   }
+}
+
+export function getMazeDefinition(mazeDefinition = DEFAULT_MAZE_ID) {
+  if (typeof mazeDefinition === "string") {
+    return MAZE_DEFINITIONS[mazeDefinition] ?? MAZE_DEFINITIONS[DEFAULT_MAZE_ID];
+  }
+
+  return mazeDefinition ?? MAZE_DEFINITIONS[DEFAULT_MAZE_ID];
 }

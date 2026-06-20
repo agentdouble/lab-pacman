@@ -1,4 +1,5 @@
 import {
+  DEFAULT_MAZE_ID,
   DIRECTIONS,
   FRIGHTENED_GHOST_SPEED,
   GHOST_SPEED,
@@ -25,17 +26,26 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    mazeSelectElement,
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.mazeSelectElement = mazeSelectElement;
     this.renderer = new Renderer(canvas);
-    this.maze = new Maze();
-    this.pacman = new Pacman(this.maze.pacmanSpawn);
-    this.ghosts = this.maze.ghostSpawns.map((spawn, index) => new Ghost(spawn, index));
+    this.selectedMazeId = mazeSelectElement?.value || DEFAULT_MAZE_ID;
+    this.loadMaze(this.selectedMazeId);
     this.lastFrame = 0;
     this.time = 0;
     this.score = 0;
@@ -55,8 +65,13 @@ export class PacmanGame {
       onRestart: () => this.restart(),
     });
 
+    this.mazeSelectElement?.addEventListener("change", () => {
+      this.selectedMazeId = this.mazeSelectElement.value;
+      this.restart({ announceMaze: true });
+    });
+
     this.updateHud();
-    this.showMessage("READY");
+    this.showMessage(this.readyMessage());
   }
 
   start() {
@@ -273,6 +288,17 @@ export class PacmanGame {
     this.updateHud();
   }
 
+  loadMaze(mazeId) {
+    this.maze = new Maze(mazeId);
+    this.selectedMazeId = this.maze.id;
+    this.pacman = new Pacman(this.maze.pacmanSpawn);
+    this.ghosts = this.maze.ghostSpawns.map((spawn, index) => new Ghost(spawn, index));
+
+    if (this.mazeSelectElement && this.mazeSelectElement.value !== this.selectedMazeId) {
+      this.mazeSelectElement.value = this.selectedMazeId;
+    }
+  }
+
   resetActors() {
     this.pacman.reset();
     for (const ghost of this.ghosts) {
@@ -280,8 +306,8 @@ export class PacmanGame {
     }
   }
 
-  restart() {
-    this.maze.resetPellets();
+  restart({ announceMaze = true } = {}) {
+    this.loadMaze(this.selectedMazeId);
     this.score = 0;
     this.level = 1;
     this.lives = STARTING_LIVES;
@@ -292,7 +318,7 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.state = "ready";
     this.pauseButton.textContent = "Pause";
-    this.showMessage("READY");
+    this.showMessage(announceMaze ? this.readyMessage() : "READY");
     this.updateHud();
   }
 
@@ -329,5 +355,9 @@ export class PacmanGame {
     this.scoreElement.textContent = String(this.score);
     this.levelElement.textContent = String(this.level);
     this.livesElement.textContent = String(this.lives);
+  }
+
+  readyMessage() {
+    return `${this.maze.name} READY`;
   }
 }

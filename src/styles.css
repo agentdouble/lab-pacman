@@ -53,12 +53,13 @@ button {
 .top-bar {
   min-height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(84px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(84px, 1fr)) minmax(150px, 1.1fr) auto;
   gap: 10px;
   align-items: stretch;
 }
 
 .metric,
+.map-setting,
 .actions {
   min-width: 0;
   border: 1px solid rgba(255, 248, 216, 0.12);
@@ -74,6 +75,14 @@ button {
   border-radius: 8px;
 }
 
+.map-setting {
+  padding: 9px 10px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  border-radius: 8px;
+}
+
 .metric-label {
   color: var(--muted);
   font-size: 0.72rem;
@@ -86,6 +95,24 @@ button {
   color: var(--yellow);
   font-size: clamp(1.05rem, 2.5vw, 1.45rem);
   line-height: 1;
+}
+
+.map-select {
+  width: 100%;
+  min-height: 31px;
+  border: 1px solid rgba(125, 180, 255, 0.24);
+  border-radius: 7px;
+  background: #171522;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+  line-height: 1.1;
+  padding: 5px 30px 5px 8px;
+}
+
+.map-select:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
 }
 
 .actions {
@@ -254,6 +281,10 @@ button {
 
   .top-bar {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .map-setting {
+    grid-column: 1 / -1;
   }
 
   .actions {
