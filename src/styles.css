@@ -53,12 +53,13 @@ button {
 .top-bar {
   min-height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(84px, 1fr)) auto;
+  grid-template-columns: repeat(3, minmax(84px, 1fr)) minmax(224px, auto) auto;
   gap: 10px;
   align-items: stretch;
 }
 
 .metric,
+.enemy-color-setting,
 .actions {
   min-width: 0;
   border: 1px solid rgba(255, 248, 216, 0.12);
@@ -86,6 +87,79 @@ button {
   color: var(--yellow);
   font-size: clamp(1.05rem, 2.5vw, 1.45rem);
   line-height: 1;
+}
+
+.enemy-color-setting {
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "label hint"
+    "options options";
+  gap: 6px 8px;
+  align-content: center;
+  border-radius: 8px;
+}
+
+.enemy-color-setting .metric-label {
+  grid-area: label;
+  align-self: center;
+}
+
+.setting-hint {
+  grid-area: hint;
+  justify-self: end;
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.enemy-color-options {
+  grid-area: options;
+  display: grid;
+  grid-template-columns: repeat(5, 30px);
+  gap: 7px;
+}
+
+.enemy-color-option {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  border: 1px solid rgba(255, 248, 216, 0.18);
+  border-radius: 999px;
+  background: #0b0a11;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.enemy-color-option:hover {
+  border-color: rgba(255, 248, 216, 0.72);
+}
+
+.enemy-color-option:active {
+  transform: translateY(1px);
+}
+
+.enemy-color-option.is-selected {
+  border-color: rgba(255, 248, 216, 0.94);
+  box-shadow:
+    0 0 0 2px rgba(5, 5, 10, 0.92),
+    0 0 0 4px var(--enemy-color);
+}
+
+.enemy-color-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--enemy-color);
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 216, 0.28);
 }
 
 .actions {
@@ -256,6 +330,20 @@ button {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .enemy-color-setting {
+    grid-column: 1 / -1;
+  }
+
+  .enemy-color-options {
+    grid-template-columns: repeat(5, 34px);
+    justify-content: center;
+  }
+
+  .enemy-color-option {
+    width: 34px;
+    height: 34px;
+  }
+
   .actions {
     grid-column: 1 / -1;
   }
@@ -265,7 +353,7 @@ button {
   }
 
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 386px) * 0.9545));
   }
 
   .dpad {
@@ -275,7 +363,7 @@ button {
 
 @media (pointer: coarse) {
   .game-panel {
-    width: min(100%, calc((100dvh - 292px) * 0.9545));
+    width: min(100%, calc((100dvh - 386px) * 0.9545));
   }
 
   .dpad {
