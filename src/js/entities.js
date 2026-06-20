@@ -1,9 +1,16 @@
-import { DIRECTIONS } from "./constants.js";
+import { DEFAULT_PACMAN_COLOR, DIRECTIONS } from "./constants.js";
 
 export class Pacman {
   constructor(spawn) {
     this.spawn = { ...spawn };
+    this.setColor(DEFAULT_PACMAN_COLOR);
     this.reset();
+  }
+
+  setColor(color) {
+    this.color = color.value;
+    this.shadowColor = color.shadow;
+    this.colorName = color.name;
   }
 
   reset() {

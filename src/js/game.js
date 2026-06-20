@@ -6,6 +6,7 @@ import {
   POWER_DURATION,
   STARTING_LIVES,
 } from "./constants.js";
+import { PacmanColorSettings } from "./color-settings.js";
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
@@ -25,7 +26,17 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    colorOptionsElement,
+    colorStatusElement,
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
@@ -45,6 +56,12 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
     this.ghostCombo = 0;
+    this.colorSettings = new PacmanColorSettings({
+      container: colorOptionsElement,
+      statusElement: colorStatusElement,
+      onColorChange: (color) => this.setPacmanColor(color),
+    });
+    this.setPacmanColor(this.colorSettings.getColor());
 
     new InputController({
       canvas,
@@ -278,6 +295,10 @@ export class PacmanGame {
     for (const ghost of this.ghosts) {
       ghost.reset();
     }
+  }
+
+  setPacmanColor(color) {
+    this.pacman.setColor(color);
   }
 
   restart() {
