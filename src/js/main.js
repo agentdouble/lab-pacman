@@ -8,6 +8,8 @@ const game = new PacmanGame({
   messageElement: document.querySelector("#message"),
   pauseButton: document.querySelector("#pauseButton"),
   restartButton: document.querySelector("#restartButton"),
+  characterOptionsElement: document.querySelector("#characterOptions"),
+  characterRuleElement: document.querySelector("#characterRule"),
 });
 
 game.start();

@@ -27,6 +27,17 @@
         </div>
       </header>
 
+      <section class="character-panel" aria-labelledby="characterTitle">
+        <div class="character-panel-header">
+          <div>
+            <span class="metric-label">Character</span>
+            <h1 id="characterTitle">Pac-Man roster</h1>
+          </div>
+          <p id="characterRule" class="character-rule" aria-live="polite"></p>
+        </div>
+        <div id="characterOptions" class="character-options" aria-label="Character settings"></div>
+      </section>
+
       <section class="game-panel" aria-label="Pac-Man board">
         <canvas id="gameCanvas" width="672" height="704"></canvas>
         <div id="message" class="game-message" aria-live="polite">READY</div>

@@ -4,8 +4,9 @@ import {
   GHOST_SPEED,
   PACMAN_SPEED,
   POWER_DURATION,
-  STARTING_LIVES,
 } from "./constants.js";
+import { CharacterSelector } from "./character-selector.js";
+import { CHARACTERS, getCharacterById, getDefaultCharacter, scoreForCharacter } from "./characters.js";
 import { Ghost, Pacman } from "./entities.js";
 import { InputController } from "./input.js";
 import { Maze } from "./maze.js";
@@ -25,22 +26,34 @@ const ROUND_READY_TIME = 1.2;
 const LEVEL_READY_TIME = 1.5;
 
 export class PacmanGame {
-  constructor({ canvas, scoreElement, levelElement, livesElement, messageElement, pauseButton, restartButton }) {
+  constructor({
+    canvas,
+    scoreElement,
+    levelElement,
+    livesElement,
+    messageElement,
+    pauseButton,
+    restartButton,
+    characterOptionsElement,
+    characterRuleElement,
+  }) {
     this.canvas = canvas;
     this.scoreElement = scoreElement;
     this.levelElement = levelElement;
     this.livesElement = livesElement;
     this.messageElement = messageElement;
     this.pauseButton = pauseButton;
+    this.characterRuleElement = characterRuleElement;
     this.renderer = new Renderer(canvas);
     this.maze = new Maze();
-    this.pacman = new Pacman(this.maze.pacmanSpawn);
+    this.selectedCharacter = getDefaultCharacter();
+    this.pacman = new Pacman(this.maze.pacmanSpawn, this.selectedCharacter);
     this.ghosts = this.maze.ghostSpawns.map((spawn, index) => new Ghost(spawn, index));
     this.lastFrame = 0;
     this.time = 0;
     this.score = 0;
     this.level = 1;
-    this.lives = STARTING_LIVES;
+    this.lives = this.selectedCharacter.stats.lives;
     this.state = "ready";
     this.readyUntil = ROUND_READY_TIME;
     this.powerUntil = 0;
@@ -55,8 +68,16 @@ export class PacmanGame {
       onRestart: () => this.restart(),
     });
 
+    this.characterSelector = new CharacterSelector({
+      container: characterOptionsElement,
+      characters: CHARACTERS,
+      selectedId: this.selectedCharacter.id,
+      onSelect: (characterId) => this.selectCharacter(characterId),
+    });
+
+    this.updateCharacterRule();
     this.updateHud();
-    this.showMessage("READY");
+    this.showReadyMessage();
   }
 
   start() {
@@ -85,7 +106,7 @@ export class PacmanGame {
     this.time += dt;
 
     if (this.state === "ready" && this.time >= this.readyUntil) {
-      this.showMessage("READY");
+      this.showReadyMessage();
     }
 
     if (this.state !== "playing") {
@@ -128,12 +149,12 @@ export class PacmanGame {
       const pellet = this.maze.eatAt(tile.x, tile.y);
 
       if (pellet.points > 0) {
-        this.score += pellet.points;
+        this.score += scoreForCharacter(pellet.points, this.selectedCharacter);
         this.updateHud();
       }
 
       if (pellet.powered) {
-        this.powerUntil = this.time + POWER_DURATION;
+        this.powerUntil = this.time + POWER_DURATION * this.selectedCharacter.stats.powerDurationMultiplier;
         this.ghostCombo = 0;
       }
     }
@@ -142,7 +163,8 @@ export class PacmanGame {
       this.pacman.facing = this.pacman.direction;
     }
 
-    moveEntity(this.pacman, this.maze, dt, PACMAN_SPEED + Math.min(1.1, (this.level - 1) * 0.16));
+    const levelBonus = Math.min(1.1, (this.level - 1) * 0.16);
+    moveEntity(this.pacman, this.maze, dt, (PACMAN_SPEED + levelBonus) * this.selectedCharacter.stats.speedMultiplier);
   }
 
   updateGhosts(dt) {
@@ -232,7 +254,7 @@ export class PacmanGame {
 
       if (this.isFrightened()) {
         this.ghostCombo += 1;
-        this.score += 200 * this.ghostCombo;
+        this.score += scoreForCharacter(200 * this.ghostCombo, this.selectedCharacter);
         ghost.reset();
         this.updateHud();
         continue;
@@ -258,7 +280,7 @@ export class PacmanGame {
     this.powerUntil = 0;
     this.state = "ready";
     this.readyUntil = this.time + ROUND_READY_TIME;
-    this.showMessage("READY");
+    this.showReadyMessage();
   }
 
   advanceLevel() {
@@ -274,6 +296,7 @@ export class PacmanGame {
   }
 
   resetActors() {
+    this.pacman.setCharacter(this.selectedCharacter);
     this.pacman.reset();
     for (const ghost of this.ghosts) {
       ghost.reset();
@@ -284,7 +307,7 @@ export class PacmanGame {
     this.maze.resetPellets();
     this.score = 0;
     this.level = 1;
-    this.lives = STARTING_LIVES;
+    this.lives = this.selectedCharacter.stats.lives;
     this.powerUntil = 0;
     this.ghostCombo = 0;
     this.resetActors();
@@ -292,8 +315,23 @@ export class PacmanGame {
     this.readyUntil = ROUND_READY_TIME;
     this.state = "ready";
     this.pauseButton.textContent = "Pause";
-    this.showMessage("READY");
+    this.showReadyMessage();
+    this.updateCharacterRule();
     this.updateHud();
+  }
+
+  selectCharacter(characterId) {
+    const nextCharacter = getCharacterById(characterId);
+
+    if (nextCharacter.id === this.selectedCharacter.id) {
+      this.characterSelector.setSelected(nextCharacter.id);
+      this.updateCharacterRule();
+      return;
+    }
+
+    this.selectedCharacter = nextCharacter;
+    this.characterSelector.setSelected(nextCharacter.id);
+    this.restart();
   }
 
   togglePause() {
@@ -320,6 +358,10 @@ export class PacmanGame {
     this.messageElement.classList.add("is-visible");
   }
 
+  showReadyMessage() {
+    this.showMessage(`${this.selectedCharacter.shortName} READY`);
+  }
+
   hideMessage() {
     this.pauseButton.textContent = "Pause";
     this.messageElement.classList.remove("is-visible");
@@ -329,5 +371,14 @@ export class PacmanGame {
     this.scoreElement.textContent = String(this.score);
     this.levelElement.textContent = String(this.level);
     this.livesElement.textContent = String(this.lives);
+  }
+
+  updateCharacterRule() {
+    if (!this.characterRuleElement) {
+      return;
+    }
+
+    const defaultCharacter = getDefaultCharacter();
+    this.characterRuleElement.textContent = `New games use ${this.selectedCharacter.shortName}. Changing character starts a fresh run. Default: ${defaultCharacter.shortName}.`;
   }
 }

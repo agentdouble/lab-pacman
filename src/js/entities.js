@@ -1,9 +1,14 @@
 import { DIRECTIONS } from "./constants.js";
 
 export class Pacman {
-  constructor(spawn) {
+  constructor(spawn, character) {
     this.spawn = { ...spawn };
+    this.character = character;
     this.reset();
+  }
+
+  setCharacter(character) {
+    this.character = character;
   }
 
   reset() {
